@@ -9,6 +9,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
@@ -55,6 +56,7 @@ import hudson.tasks.Publisher;
 import hudson.util.FormValidation;
 import hudson.util.ListBoxModel;
 import hudson.util.Secret;
+import hudson.util.ListBoxModel.Option;
 import jenkins.model.Jenkins;
 import jenkins.tasks.SimpleBuildStep;
 import qshaded.com.google.gson.Gson;
@@ -65,6 +67,7 @@ import qshaded.com.google.gson.reflect.TypeToken;
 
 @Extension
 public class GetImageVulnsNotifier extends Notifier implements SimpleBuildStep {
+	private String platform;
 	private String apiServer;
 	private String apiUser;
     private Secret apiPass;
@@ -137,7 +140,10 @@ public class GetImageVulnsNotifier extends Notifier implements SimpleBuildStep {
         if(useLocalConfig) {
         	this.useLocalConfig = useLocalConfig;
         	this.imageIds = imageIds;
-        	this.apiServer = apiServer.trim();
+        	if(!StringUtils.isBlank(apiServer)) 
+		 	{
+		 		this.apiServer = apiServer;
+		 	}
 			if(apiUser!=null && !apiUser.isEmpty()) { this.apiUser = apiUser; }
         	if(apiPass!=null && !apiPass.isEmpty()) { this.apiPass = Secret.fromString(apiPass); }
         	this.credentialsId = credentialsId;
@@ -194,6 +200,13 @@ public class GetImageVulnsNotifier extends Notifier implements SimpleBuildStep {
     }
 
     public GetImageVulnsNotifier() { }
+    
+    public String getPlatform() {return platform;}
+    
+    @DataBoundSetter
+    public void setPlatform(String platform) {
+    	this.platform = platform;
+    }
     
     public String getApiUser() {return apiUser;}
     @DataBoundSetter
@@ -450,6 +463,9 @@ public class GetImageVulnsNotifier extends Notifier implements SimpleBuildStep {
 	
 	@DataBoundSetter
 	public void setApiServer(String apiServer) {
+		if (apiServer!=null && apiServer.endsWith("/")) {
+			apiServer = apiServer.substring(0, apiServer.length() - 1);
+		}
         this.apiServer = apiServer.trim();
     }
 
@@ -849,6 +865,16 @@ public class GetImageVulnsNotifier extends Notifier implements SimpleBuildStep {
 		 
 	     HashMap<String, String> uniqueImageIdList = processImages(imageSet, listener, launcher);
 	     
+	     
+	    Map<String, String> platformObj = Helper.platformsList.get(platform);
+    	String portalUrl = apiServer;
+    	//set apiServer URL according to platform
+    	if(!platform.equalsIgnoreCase("pcp")) {
+    		setApiServer(platformObj.get("url"));
+    		logger.info("Using qualys API Server URL: " + apiServer);
+    		portalUrl = platformObj.get("portal");
+    	}
+     
 		String apiUserVal = "";
     	String apiPassVal = "";
     	if(!StringUtils.isBlank(apiUser)) {
@@ -1078,8 +1104,9 @@ public class GetImageVulnsNotifier extends Notifier implements SimpleBuildStep {
 
         public FormValidation doCheckApiServer(@QueryParameter String apiServer) {
             try {
+            	String server = apiServer != null ? apiServer.trim() : "";
             	Pattern patt = Pattern.compile(URL_REGEX);
-                Matcher matcher = patt.matcher(apiServer.trim());
+                Matcher matcher = patt.matcher(server);
             	
                 if (!(matcher.matches())) {
                     return FormValidation.error("Server name is not valid!");
@@ -1329,7 +1356,7 @@ public class GetImageVulnsNotifier extends Notifier implements SimpleBuildStep {
         }
         
         @POST
-        public FormValidation doCheckConnection(@QueryParameter String apiServer, @QueryParameter String credentialsId, 
+        public FormValidation doCheckConnection(@QueryParameter String platform, @QueryParameter String apiServer, @QueryParameter String credentialsId, 
         		@QueryParameter String proxyServer, @QueryParameter String proxyPort, @QueryParameter String proxyCredentialsId,
         		@QueryParameter boolean useProxy, @AncestorInPath Item item) {
         	Jenkins.getInstance().checkPermission(Item.CONFIGURE);
@@ -1338,8 +1365,14 @@ public class GetImageVulnsNotifier extends Notifier implements SimpleBuildStep {
     		String proxyUsername = "";
     		String proxyPassword = "";
         	try {
-        		apiServer = apiServer.trim();
-        		FormValidation apiServerValidation = doCheckApiServer(apiServer);
+        		String server = apiServer != null ? apiServer.trim() : "";
+        		if(!platform.equalsIgnoreCase("pcp")) {
+            		Map<String, String> platformObj = Helper.platformsList.get(platform);
+            		server = platformObj.get("url");
+            	}
+            	logger.info("Using qualys API Server URL: " + server);
+            	
+        		FormValidation apiServerValidation = apiServer != null ? doCheckApiServer(apiServer) : FormValidation.ok();
         		FormValidation proxyServerValidation = doCheckProxyServer(proxyServer);
         		FormValidation proxyPortValidation = doCheckProxyPort(proxyPort);
         		
@@ -1359,6 +1392,10 @@ public class GetImageVulnsNotifier extends Notifier implements SimpleBuildStep {
     			if(!invalidFields.isEmpty())
     				return FormValidation.error("Invalid inputs for the following fields: " + String.join(", ", invalidFields));
         		
+    			
+    			
+        		logger.info("Using credentials id: " + credentialsId);
+    			
     			if (StringUtils.isNotEmpty(credentialsId)) {
                     StandardUsernamePasswordCredentials c = CredentialsMatchers.firstOrNull(CredentialsProvider.lookupCredentials(
                                     StandardUsernamePasswordCredentials.class,
@@ -1385,7 +1422,7 @@ public class GetImageVulnsNotifier extends Notifier implements SimpleBuildStep {
                 }
     			
         		QualysAuth auth = new QualysAuth();
-            	auth.setQualysCredentials(apiServer, apiUser, apiPass);
+            	auth.setQualysCredentials(server, apiUser, apiPass);
             	if(useProxy) {
 	            	int proxyPortInt = Integer.parseInt(proxyPort);
 	            	auth.setProxyCredentials(proxyServer, proxyUsername, proxyPassword, proxyPortInt);
@@ -1403,6 +1440,16 @@ public class GetImageVulnsNotifier extends Notifier implements SimpleBuildStep {
             	e.printStackTrace();
             	return FormValidation.error("Connection test failed. (Reason: Wrong inputs. Please check API Server and Proxy details.)");
             }
+        }
+        
+        @POST
+        public ListBoxModel doFillPlatformItems() {
+        	ListBoxModel model = new ListBoxModel();
+        	for(Map<String, String> platform: getPlatforms()) {
+        		Option e = new Option(platform.get("name"), platform.get("code"));
+            	model.add(e);
+        	}
+        	return model;
         }
         
         @POST
@@ -1501,6 +1548,15 @@ public class GetImageVulnsNotifier extends Notifier implements SimpleBuildStep {
         		}
 	        }
         	return FormValidation.ok();
+        }
+        
+        public List<Map<String, String>> getPlatforms() {
+        	List<Map<String, String>> result = new ArrayList<Map<String, String>>();
+        	for (Map.Entry<String, Map<String, String>> platform : Helper.platformsList.entrySet()) {
+                Map<String, String>obj = platform.getValue();
+                result.add(obj);
+            }
+            return result;
         }
     }
 }

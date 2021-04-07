@@ -65,7 +65,7 @@
 		document.load = docReady;
 		
 		function docReady() {
-		
+			
 			var x = document.getElementsByName("isPotentialVulnsToBeChecked")[0];
 			if(x!==undefined)
 				x.insertAdjacentHTML('beforebegin', "&#160; &#160; &#160; &#160; &#160; &#160; &#160;" );
@@ -86,6 +86,7 @@
 			if(!checkbx2.checked &amp;&amp; !checkbx1.checked){
 				checkbx1.checked = true;
 			}
+			
 			document.getElementsByName("useGlobalConfig")[0].addEventListener("click", configClicked, false);
 			document.getElementsByName("useLocalConfig")[0].addEventListener("click", configClicked, false);
 			document.getElementById("excludeBy").addEventListener("change", excludeOptionChanged, true);
@@ -94,7 +95,32 @@
 			
 			document.getElementById("cvssVersion").addEventListener("change", cvssOptionChanged, true);
 			if("${instance.cvssVersion}" === "2") document.getElementById("optionCvssV2").selected= true;
-			if("${instance.cvssVersion}" === "3") document.getElementById("optionCvssV3").selected= true;		
+			if("${instance.cvssVersion}" === "3") document.getElementById("optionCvssV3").selected= true;
+			
+		
+			var apiServerTr = document.getElementsByName("_.apiServer")[0].parentNode.parentNode;
+			  
+		   	document.getElementById("platform").onchange = function(){
+				if(this.value === "PCP"){
+					apiServerTr.style.display = 'table-row';
+					//apiServerTr.previous('tr').style.display = 'table-row';
+					apiServerTr.next('tr').style.display = 'table-row';
+				}else{
+					apiServerTr.style.display = 'none';
+					//apiServerTr.previous('tr').style.display = 'none';
+					apiServerTr.next('tr').style.display = 'none';
+				}
+			}
+		
+			if(document.getElementById("platform").value == "PCP"){
+		    	apiServerTr.style.display = 'table-row';
+				apiServerTr.next().style.display='table-row';
+		    }else{
+					apiServerTr.style.display = 'none';
+					//apiServerTr.previous('tr').style.display = 'none';
+					apiServerTr.next('tr').style.display = 'none';
+				}
+  		
 		};
 		
 		function cvssOptionChanged(){
@@ -115,15 +141,55 @@
 			    }else{
 				    checkbx1.checked = false;
 				    checkbx2.checked = true;
-				    return false;
+				    updateOptionalBlock(checkbx1,true);
+				    
+				    var apiServerTr = document.getElementsByName("_.apiServer")[0].parentNode.parentNode;
+				    if(document.getElementById("platform").value == "PCP"){
+				    	apiServerTr.style.display = 'table-row';
+						apiServerTr.next().style.display='table-row';
+				    }else{
+							apiServerTr.style.display = 'none';
+							//apiServerTr.previous('tr').style.display = 'none';
+							apiServerTr.next('tr').style.display = 'none';
+					}
+				    
+				    //return false;
 				}
 			}
 			if(this.attributes.id.value == checkbx1.attributes.id.value){
-			    checkbx2.checked=false;
-			    updateOptionalBlock(checkbx2,true);
-			    checkbx1.checked = true;
-			    return false;
+				if(!checkbx1.checked){
+			    	checkbx1.checked = true;
+			    	updateOptionalBlock(this,true);
+			    }else{
+				    checkbx2.checked=false;
+				    checkbx1.checked = true;
+				    updateOptionalBlock(checkbx2,true);
+				    //return false;
+			    }
 			}
+			
+			var apiServerTr = document.getElementsByName("_.apiServer")[0].parentNode.parentNode;
+		  
+			apiServerTr.style.display = 'none';
+			apiServerTr.next('tr').style.display = 'none';
+		  
+		    document.getElementById("platform").onchange = function(){
+				if(this.value === "PCP"){
+					apiServerTr.style.display = 'table-row';
+					//apiServerTr.previous('tr').style.display = 'table-row';
+					apiServerTr.next('tr').style.display = 'table-row';
+				}else{
+					apiServerTr.style.display = 'none';
+					//apiServerTr.previous('tr').style.display = 'none';
+					apiServerTr.next('tr').style.display = 'none';
+				}
+			}
+			
+			if(document.getElementById("platform").value == "PCP"){
+		    	apiServerTr.style.display = 'table-row';
+				apiServerTr.next().style.display='table-row';
+		    }
+	  
 		}
 		
 	</script>
@@ -141,9 +207,14 @@
 	    <f:optionalBlock name="useLocalConfig" field="useLocalConfig" title="Use Job Specific Configuration" inline="true">
 		    <f:section title="API Login">
 		    	<f:block> <div> Provide details for accessing the Qualys Container Security API.  </div> <br /> </f:block>
-				<f:entry title="API Server URL:" description="Example: https://qualysapi.qualys.com" field="apiServer">
-			        <f:textbox style="width: 50%; min-width: 320px;" />
+		    	<f:entry title="Your Qualys Portal:" field="platform" help="/plugin/qualys-vm/help/platform.html">
+			        <f:select name="platform" style="width: 35%;" id="platform" />
 			    </f:entry>
+			    <f:block>
+					<f:entry title="API Server URL:" field="apiServer">
+				        <f:textbox style="width: 35%; min-width: 320px;" />
+				    </f:entry>
+			    </f:block>
 			    <f:entry field="credentialsId" title=" ${%Credentials}" help="/plugin/qualys-cs/help/credentialsId.html">
 					<c:select id="credentialsId" />
 				</f:entry>
@@ -161,7 +232,7 @@
 						</f:entry>
 				    </div></f:block> 
 			    </f:optionalBlock>
-			    <f:validateButton title="Test Connection" progress="Testing..." method="checkConnection" with="apiServer,credentialsId,proxyServer,proxyPort,proxyCredentialsId,useProxy"/>
+			    <f:validateButton title="Test Connection" progress="Testing..." method="checkConnection" with="platform,apiServer,credentialsId,proxyServer,proxyPort,proxyCredentialsId,useProxy"/>
 			</f:section>
 			<f:section title="Data Collection">
 				<f:block> <div> Qualys vulnerability data will be collected per these settings. For each enter a value in seconds or an expression like 2*60*60 for 2 hours or 2*60 for 2 minutes. <br /> </div> 
