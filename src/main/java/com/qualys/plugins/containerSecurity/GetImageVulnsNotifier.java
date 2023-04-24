@@ -1462,6 +1462,7 @@ public class GetImageVulnsNotifier extends Notifier implements SimpleBuildStep {
                 	return result.add(credentialsId);
                 }
             } else {
+
 				item.checkPermission(Item.CONFIGURE);
             	if (!item.hasPermission(Item.EXTENDED_READ)
                         && !item.hasPermission(CredentialsProvider.USE_ITEM)) {
@@ -1482,6 +1483,7 @@ public class GetImageVulnsNotifier extends Notifier implements SimpleBuildStep {
                 	return result.add(proxyCredentialsId);
                 }
             } else {
+
 				item.checkPermission(Item.CONFIGURE);
             	if (!item.hasPermission(Item.EXTENDED_READ)
                         && !item.hasPermission(CredentialsProvider.USE_ITEM)) {
