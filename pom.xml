@@ -88,8 +88,8 @@
       <url>https://repo.jenkins-ci.org/public/</url>
     </repository>
 	<repository>
-    	<id>in-project</id>
-    	<name>In Project Repo</name>
+    	<id>local</id>
+    	<name>Local Repository (artefact in project source code)</name>
     	<url>file://${project.basedir}/lib</url>
 	</repository>
   </repositories>
