@@ -1,1 +1,1 @@
-buildPlugin(tests: [skip: true], useContainerAgent: true, spotbugs: [qualityGates: [[threshold: 1000, type: 'TOTAL', unstable: false]] ])
+buildPlugin(tests: [skip: true], spotbugs: [qualityGates: [[threshold: 1000, type: 'TOTAL', unstable: false]] ])
