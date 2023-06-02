@@ -1458,12 +1458,10 @@ public class GetImageVulnsNotifier extends Notifier implements SimpleBuildStep {
         public ListBoxModel doFillCredentialsIdItems(@AncestorInPath Item item, @QueryParameter String credentialsId) {
         	StandardListBoxModel result = new StandardListBoxModel();
             if (item == null) {
-            	if (!Jenkins.getInstance().hasPermission(Item.CONFIGURE)) {
+            	if (!Jenkins.getInstance().hasPermission(Jenkins.ADMINISTER)) {
                 	return result.add(credentialsId);
                 }
             } else {
-
-				item.checkPermission(Item.CONFIGURE);
             	if (!item.hasPermission(Item.EXTENDED_READ)
                         && !item.hasPermission(CredentialsProvider.USE_ITEM)) {
                 	return result.add(credentialsId);
@@ -1479,12 +1477,10 @@ public class GetImageVulnsNotifier extends Notifier implements SimpleBuildStep {
         public ListBoxModel doFillProxyCredentialsIdItems(@AncestorInPath Item item, @QueryParameter String proxyCredentialsId) {
             StandardListBoxModel result = new StandardListBoxModel();
             if (item == null) {
-            	if (!Jenkins.getInstance().hasPermission(Item.CONFIGURE)) {
+            	if (!Jenkins.getInstance().hasPermission(Jenkins.ADMINISTER)) {
                 	return result.add(proxyCredentialsId);
                 }
             } else {
-
-				item.checkPermission(Item.CONFIGURE);
             	if (!item.hasPermission(Item.EXTENDED_READ)
                         && !item.hasPermission(CredentialsProvider.USE_ITEM)) {
                 	return result.add(proxyCredentialsId);
