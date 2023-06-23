@@ -113,7 +113,8 @@ public class GetImageVulnsNotifier extends Notifier implements SimpleBuildStep {
 	private String webhookUrl;
 	private String dockerUrl;
 	private String dockerCert;
-	
+
+	private String crictlBinaryPath;
     private String cvssVersion;
     private String cvssThreshold;
     private boolean failByCvss = false;
@@ -686,19 +687,28 @@ public class GetImageVulnsNotifier extends Notifier implements SimpleBuildStep {
 				listener.getLogger().println("No webhook configured.");
 			}
 		}
-    	
-    	String dockerUrlConf = QualysGlobalConfig.get().getDockerUrl();
-    	if(StringUtils.isEmpty(dockerUrlConf)) {
-    		this.dockerUrl = "unix:///var/run/docker.sock";
-    	}else {
-    		this.dockerUrl = dockerUrlConf;
-    	}
-    	String dockerCertConf = QualysGlobalConfig.get().getDockerCert();
-    	if(!StringUtils.isEmpty(dockerCertConf)) {
-    		this.dockerCert = dockerCertConf;
-    	}
-    	
-    	
+    	//if runtime is docker
+//    	String dockerUrlConf = QualysGlobalConfig.get().getDockerUrl();
+//    	if(StringUtils.isEmpty(dockerUrlConf)) {
+//    		this.dockerUrl = "unix:///var/run/docker.sock";
+//    	}else {
+//    		this.dockerUrl = dockerUrlConf;
+//    	}
+//    	String dockerCertConf = QualysGlobalConfig.get().getDockerCert();
+//    	if(!StringUtils.isEmpty(dockerCertConf)) {
+//    		this.dockerCert = dockerCertConf;
+//    	}
+		this.dockerUrl = "run/containerd/containerd.sock";
+		this.crictlBinaryPath= QualysGlobalConfig.get().getCrictlBinaryPath().trim();
+		if(crictlBinaryPath.isEmpty()||crictlBinaryPath==null) {
+			this.crictlBinaryPath="/var/crictl_binary";
+		}
+		else {//if path contains / in the end remove it
+			if(this.crictlBinaryPath.endsWith("/")){
+				this.crictlBinaryPath=this.crictlBinaryPath.substring(0,this.crictlBinaryPath.length()-1);
+			}
+			logger.info("configured crictl binary path to  : " + this.crictlBinaryPath);
+		}
     }
     
     public JsonObject getCriteriaAsJsonObject() {
@@ -967,7 +977,7 @@ public class GetImageVulnsNotifier extends Notifier implements SimpleBuildStep {
     	ProxyConfiguration proxyConfiguration = new ProxyConfiguration(useProxy, proxyServer, proxyPort, proxyUsernameVal, proxyPasswordVal); 
     	GetImageVulns executor = new GetImageVulns(client, auth, run, listener, pollingIntervalForVulns, timeoutToFetchVulnsInMillis, webhookUrl, criteriaObj, isFailConditionsConfigured, proxyConfiguration);
     	
-    	listener.getLogger().println("Qualys task - Started fetching docker image scan results.");
+    	listener.getLogger().println("Qualys task - Started fetching image scan results.");
         
     	executor.getAndProcessDockerImagesScanResult(uniqueImageIdList, taggingTime);
         listener.getLogger().println("Qualys task - Finished.");
@@ -981,7 +991,7 @@ public class GetImageVulnsNotifier extends Notifier implements SimpleBuildStep {
 		//Check if sensor is running on same instance where images are built and docker daemon is shared
 		
 		VirtualChannel channel = launcher.getChannel();
-	    Boolean isCICDSensorRunning =  (channel == null ? null : channel.call(new CheckSensorSlaveCallable(dockerUrl, dockerCert, listener)));
+	    Boolean isCICDSensorRunning =  (channel == null ? null : channel.call(new CheckSensorSlaveCallable(dockerUrl, dockerCert,crictlBinaryPath, listener)));
 		
 	    if (isCICDSensorRunning == null) {
 	    	throw new AbortException("Unable to launch the sensor check operation using SlaveCallable");
@@ -995,7 +1005,7 @@ public class GetImageVulnsNotifier extends Notifier implements SimpleBuildStep {
 			listener.getLogger().println("*** Qualys CS sensor is deployed in CICD mode ***");
 		}
 		
-		listener.getLogger().println("For Image tagging, using docker url: " + dockerUrl + (StringUtils.isNotBlank(dockerCert) ? " & docker Cert path : " + dockerCert + "." : "") );
+		listener.getLogger().println("For Image tagging, using url: " + dockerUrl + (StringUtils.isNotBlank(dockerCert) ? " & docker Cert path : " + dockerCert + "." : "") );
 		
 		Instant instant = Instant.now();
 		taggingTime = instant.getEpochSecond();
@@ -1007,7 +1017,7 @@ public class GetImageVulnsNotifier extends Notifier implements SimpleBuildStep {
     		
     		try {
   				VirtualChannel channel2 = launcher.getChannel();
-  				imageSha =  (channel2 == null ? null : channel2.call(new ImageShaExtractSlaveCallable(image, dockerUrl, dockerCert, listener)));
+  				imageSha =  (channel2 == null ? null : channel2.call(new ImageShaExtractSlaveCallable(image, dockerUrl, dockerCert,crictlBinaryPath, listener)));
   			}catch(Exception e) {
   				e.printStackTrace(listener.getLogger());
   				throw e;
@@ -1018,11 +1028,11 @@ public class GetImageVulnsNotifier extends Notifier implements SimpleBuildStep {
     				listOfImageIds.add(imageSha);
     				finalImagesList.put(imageSha, image);
     				logger.info("Adding qualys_scan_target tag to the image " + image);
-    				listener.getLogger().println("Adding qualys specific docker tag to the image " + image);
+    				listener.getLogger().println("Adding qualys specific containerd tag to the image " + image);
     				try {
     					VirtualChannel channel2 = launcher.getChannel();
           				if (channel2 != null) {
-          					channel2.call(new TagImageSlaveCallable(image, imageSha, dockerUrl, dockerCert, listener));
+          					channel2.call(new TagImageSlaveCallable(image, imageSha, dockerUrl, dockerCert, crictlBinaryPath,listener));
           				}
     				}catch(Exception e) {
     					e.printStackTrace(listener.getLogger());
@@ -1376,7 +1386,7 @@ public class GetImageVulnsNotifier extends Notifier implements SimpleBuildStep {
         public FormValidation doCheckConnection(@QueryParameter String platform, @QueryParameter String apiServer, @QueryParameter String credentialsId, 
         		@QueryParameter String proxyServer, @QueryParameter String proxyPort, @QueryParameter String proxyCredentialsId,
         		@QueryParameter boolean useProxy, @AncestorInPath Item item) {
-        	item.checkPermission(Item.CONFIGURE);
+        	Jenkins.getInstance().checkPermission(Item.CONFIGURE);
         	String apiUser = "";
     		String apiPass = "";
     		String proxyUsername = "";
@@ -1456,9 +1466,10 @@ public class GetImageVulnsNotifier extends Notifier implements SimpleBuildStep {
         
         @POST
         public ListBoxModel doFillCredentialsIdItems(@AncestorInPath Item item, @QueryParameter String credentialsId) {
+        	Jenkins.getInstance().checkPermission(Item.CONFIGURE);
         	StandardListBoxModel result = new StandardListBoxModel();
             if (item == null) {
-            	if (!Jenkins.getInstance().hasPermission(Jenkins.ADMINISTER)) {
+            	if (!Jenkins.getInstance().hasPermission(Item.CONFIGURE)) {
                 	return result.add(credentialsId);
                 }
             } else {
@@ -1475,9 +1486,10 @@ public class GetImageVulnsNotifier extends Notifier implements SimpleBuildStep {
         
         @POST
         public ListBoxModel doFillProxyCredentialsIdItems(@AncestorInPath Item item, @QueryParameter String proxyCredentialsId) {
+        	Jenkins.getInstance().checkPermission(Item.CONFIGURE);
             StandardListBoxModel result = new StandardListBoxModel();
             if (item == null) {
-            	if (!Jenkins.getInstance().hasPermission(Jenkins.ADMINISTER)) {
+            	if (!Jenkins.getInstance().hasPermission(Item.CONFIGURE)) {
                 	return result.add(proxyCredentialsId);
                 }
             } else {

@@ -85,7 +85,7 @@ public class QualysGlobalConfig extends GlobalConfiguration {
 	private String webhookUrl;
 	private String dockerUrl = "unix:///var/run/docker.sock";
 	private String dockerCert;
-	
+	private String crictlBinaryPath="/var/crictl_binary";
 	private String cvssVersion;
     private String cvssThreshold;
     private boolean failByCvss = false;
@@ -780,8 +780,17 @@ public class QualysGlobalConfig extends GlobalConfiguration {
     public String getDockerCert(){
     	return this.dockerCert;
     }
-    
-    public boolean getIsExcludeConditions() {
+
+	public String getCrictlBinaryPath() {
+		return crictlBinaryPath;
+	}
+
+	public void setCrictlBinaryPath(String crictlBinaryPath) {
+		this.crictlBinaryPath = crictlBinaryPath;
+	}
+
+
+	public boolean getIsExcludeConditions() {
         return this.isExcludeConditions;
     }
 

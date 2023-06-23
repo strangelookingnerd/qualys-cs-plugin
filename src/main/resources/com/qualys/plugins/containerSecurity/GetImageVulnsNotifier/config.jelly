@@ -334,7 +334,7 @@
 			<f:block> 
 				<div>List of container images to fetch and validate the vulnerability results for.</div> <br />
 			</f:block>
-			<f:entry field="imageIds" title="Image IDs/Image Names" help="/plugin/qualys-cs/help/imageIds.html">
+			<f:entry field="imageIds" title="Image Names" help="/plugin/qualys-cs/help/imageIds.html">
 		    	<f:textbox field="imageIds" />
 		    </f:entry>
 		</f:section>

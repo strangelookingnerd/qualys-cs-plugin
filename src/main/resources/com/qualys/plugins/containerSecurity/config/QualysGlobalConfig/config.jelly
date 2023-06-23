@@ -218,14 +218,22 @@
 		        	<f:textbox style="width: 50%; min-width: 320px;" />
 		    	</f:entry>
 		    	
-		    	<f:block> <div class="qualys-section-header">&#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; Docker Settings  </div> 
-			    	<f:entry title="&#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; Docker URL" description="Docker server REST API URL" field="dockerUrl" >
-		        		<f:textbox default="test" />
-		    		</f:entry>
-		    		<f:entry title="&#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; Cert file path" field="dockerCert">
-		        		<f:textbox />
-		    		</f:entry>
-		    	</f:block>
+<!--		    	<f:block> <div class="qualys-section-header">&#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; Docker Settings  </div> -->
+<!--			    	<f:entry title="&#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; Docker URL" description="Docker server REST API URL" field="dockerUrl" >-->
+<!--		        		<f:textbox default="test" />-->
+<!--		    		</f:entry>-->
+<!--		    		<f:entry title="&#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; Cert file path" field="dockerCert">-->
+<!--		        		<f:textbox />-->
+<!--		    		</f:entry>-->
+<!--		    	</f:block>-->
+				<f:block> <div class="qualys-section-header">&#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; Containerd Settings  </div>
+<!--					<f:entry title="&#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; Containerd URL" description="Containerd Socket file path" field="containerdUrl" >-->
+<!--						<f:textbox default="test" />-->
+<!--					</f:entry>-->
+					<f:entry title="&#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; crictl binary path" field="crictlBinaryPath">
+						<f:textbox />
+					</f:entry>
+				</f:block>
 			</f:advanced>
 		</f:block>
 			
