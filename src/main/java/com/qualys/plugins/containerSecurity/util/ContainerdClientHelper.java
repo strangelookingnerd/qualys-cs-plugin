@@ -79,10 +79,13 @@ public class ContainerdClientHelper {
         String sensorInfo = this.executeCommand(command);
         try {
             JsonObject sensorInfoJson = JsonParser.parseString(sensorInfo).getAsJsonObject();
-            buildLogger.println("arg is " + sensorInfoJson.get("info").getAsJsonObject().get("config").getAsJsonObject().get("args").isJsonArray());
-            if (sensorInfoJson.get("info").getAsJsonObject().get("config").getAsJsonObject().get("args").toString().contains("cicd-deployed-sensor")) {
-                return true;
-            }
+            //buildLogger.println("arg is " + sensorInfoJson.get("info").getAsJsonObject().get("config").getAsJsonObject().get("args").isJsonArray());
+            JsonArray  sensorArguments=sensorInfoJson.get("info").getAsJsonObject().get("config").getAsJsonObject().get("args").getAsJsonArray();
+                    for (JsonElement arg:sensorArguments)
+                    {
+                        if(arg.getAsString().equals("--cicd-deployed-sensor")||arg.getAsString().equals("-c"))
+                            return true;
+                    }
         } catch (Exception e) {
             String errorMsg = "Failed to check if the sensor is running in CICD mode ; Reason : " + e.getMessage();
             logger.info(errorMsg);
