@@ -20,7 +20,7 @@ public class ContainerdClientHelper {
     private final String listContainersCmd = "crictl ps --output json";
     private final String inspectContainerCmd = "crictl inspect ";
     private final String inspectImageCmd = "crictl inspecti ";
-    private final String tagImageCmd = "nerdctl -n k8s.io images tag ";
+    private final String tagImageCmd = "nerdctl -n k8s.io tag ";
     private PrintStream buildLogger;
     private String crictlBinaryPath;
 
