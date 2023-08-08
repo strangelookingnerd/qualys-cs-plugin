@@ -967,7 +967,7 @@ public class GetImageVulnsNotifier extends Notifier implements SimpleBuildStep {
     	ProxyConfiguration proxyConfiguration = new ProxyConfiguration(useProxy, proxyServer, proxyPort, proxyUsernameVal, proxyPasswordVal); 
     	GetImageVulns executor = new GetImageVulns(client, auth, run, listener, pollingIntervalForVulns, timeoutToFetchVulnsInMillis, webhookUrl, criteriaObj, isFailConditionsConfigured, proxyConfiguration);
     	
-    	listener.getLogger().println("Qualys task - Started fetching docker image scan results.");
+    	listener.getLogger().println("Qualys task - Started fetching image scan results.");
         
     	executor.getAndProcessDockerImagesScanResult(uniqueImageIdList, taggingTime);
         listener.getLogger().println("Qualys task - Finished.");
@@ -995,7 +995,7 @@ public class GetImageVulnsNotifier extends Notifier implements SimpleBuildStep {
 			listener.getLogger().println("*** Qualys CS sensor is deployed in CICD mode ***");
 		}
 		
-		listener.getLogger().println("For Image tagging, using docker url: " + dockerUrl + (StringUtils.isNotBlank(dockerCert) ? " & docker Cert path : " + dockerCert + "." : "") );
+		listener.getLogger().println("For Image tagging, using " + (Helper.isRuntimeDocker(dockerUrl) ? "docker url: " : "Nerdctl binary path" ) + dockerUrl + (StringUtils.isNotBlank(dockerCert) ? " & docker Cert path : " + dockerCert + "." : "") );
 		
 		Instant instant = Instant.now();
 		taggingTime = instant.getEpochSecond();
@@ -1018,7 +1018,7 @@ public class GetImageVulnsNotifier extends Notifier implements SimpleBuildStep {
     				listOfImageIds.add(imageSha);
     				finalImagesList.put(imageSha, image);
     				logger.info("Adding qualys_scan_target tag to the image " + image);
-    				listener.getLogger().println("Adding qualys specific docker tag to the image " + image);
+    				listener.getLogger().println("Adding qualys specific tag to the image " + image);
     				try {
     					VirtualChannel channel2 = launcher.getChannel();
           				if (channel2 != null) {

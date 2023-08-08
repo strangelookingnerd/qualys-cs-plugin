@@ -20,8 +20,44 @@
   </properties>
 
   <build>
+<!--      <extensions>-->
+<!--          <extension>-->
+<!--              <groupId>kr.motd.maven</groupId>-->
+<!--              <artifactId>os-maven-plugin</artifactId>-->
+<!--              <version>1.5.0.Final</version>-->
+<!--          </extension>-->
+<!--      </extensions>-->
+
     <finalName>${project.artifactId}_${project.version}</finalName>
     <plugins>
+
+<!--        <plugin>-->
+<!--            <groupId>org.xolstice.maven.plugins</groupId>-->
+<!--            <artifactId>protobuf-maven-plugin</artifactId>-->
+<!--            <version>0.5.1</version>-->
+<!--            <configuration>-->
+<!--                <protocArtifact>com.google.protobuf:protoc:3.7.1:exe:${os.detected.classifier}</protocArtifact>-->
+<!--                <pluginId>grpc-java</pluginId>-->
+<!--                <pluginArtifact>io.grpc:protoc-gen-grpc-java:1.21.0:exe:${os.detected.classifier}</pluginArtifact>-->
+<!--                <protoSourceRoot>src/main/proto</protoSourceRoot>-->
+<!--                <includes>-->
+<!--                    <include>github.com/containerd/containerd/api/services/images/v1/*.proto</include>-->
+<!--                    <include>github.com/containerd/containerd/api/services/containers/v1/*.proto</include>-->
+<!--                    <include>github.com/containerd/containerd/api/types/*.proto</include>-->
+<!--                    <include>github.com/containerd/containerd/vendor/k8s.io/cri-api/pkg/apis/runtime/v1/*.proto</include>-->
+<!--                    <include>protobuf/gogoproto/*.proto</include>-->
+<!--                </includes>-->
+<!--            </configuration>-->
+<!--            <executions>-->
+<!--                <execution>-->
+<!--                    <goals>-->
+<!--                        <goal>compile</goal>-->
+<!--                        <goal>compile-custom</goal>-->
+<!--                    </goals>-->
+<!--                </execution>-->
+<!--            </executions>-->
+<!--        </plugin>-->
+
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
@@ -127,7 +163,78 @@
             <artifactId>bcpkix-jdk15on</artifactId>
             <version>1.70</version>
         </dependency>
-	
+<!--      <dependency>-->
+<!--          <groupId>io.grpc</groupId>-->
+<!--          <artifactId>grpc-netty</artifactId>-->
+<!--          <version>1.21.0</version>-->
+<!--          <exclusions>-->
+<!--              <exclusion>-->
+<!--                  <groupId>io.netty</groupId>-->
+<!--                  <artifactId>netty-handler-proxy</artifactId>-->
+<!--              </exclusion>-->
+<!--          </exclusions>-->
+<!--      </dependency>-->
+<!--      <dependency>-->
+<!--          <groupId>io.grpc</groupId>-->
+<!--          <artifactId>grpc-protobuf</artifactId>-->
+<!--          <version>1.21.0</version>-->
+<!--      </dependency>-->
+<!--      <dependency>-->
+<!--          <groupId>io.grpc</groupId>-->
+<!--          <artifactId>grpc-stub</artifactId>-->
+<!--          <version>1.21.0</version>-->
+<!--      </dependency>-->
+
+<!--      <dependency>-->
+<!--          <groupId>io.netty</groupId>-->
+<!--          <artifactId>netty-transport-native-epoll</artifactId>-->
+<!--          <version>4.1.94.Final</version>-->
+<!--          <classifier>linux-x86_64</classifier>-->
+<!--          <scope>runtime</scope>-->
+<!--          <exclusions>-->
+<!--              <exclusion>-->
+<!--                  <groupId>io.netty</groupId>-->
+<!--                  <artifactId>netty-common</artifactId>-->
+<!--              </exclusion>-->
+<!--              <exclusion>-->
+<!--                  <groupId>io.netty</groupId>-->
+<!--                  <artifactId>netty-buffer</artifactId>-->
+<!--              </exclusion>-->
+<!--              <exclusion>-->
+<!--                  <groupId>io.netty</groupId>-->
+<!--                  <artifactId>netty-transport</artifactId>-->
+<!--              </exclusion>-->
+<!--              <exclusion>-->
+<!--                  <groupId>io.netty</groupId>-->
+<!--                  <artifactId>netty-transport-native-unix-common</artifactId>-->
+<!--              </exclusion>-->
+<!--              <exclusion>-->
+<!--                  <groupId>io.netty</groupId>-->
+<!--                  <artifactId>netty-transport-classes-epoll</artifactId>-->
+<!--              </exclusion>-->
+<!--              <exclusion>-->
+<!--                  <groupId>org.bouncycastle</groupId>-->
+<!--                  <artifactId>bcpkix-jdk15on</artifactId>-->
+<!--              </exclusion>-->
+<!--          </exclusions>-->
+<!--          <optional>false</optional>-->
+<!--      </dependency>-->
+
+<!--      <dependency>-->
+<!--          <groupId>io.netty</groupId>-->
+<!--          <artifactId>netty-all</artifactId>-->
+<!--          <version>4.1.94.Final</version>-->
+<!--          <exclusions>-->
+<!--              <exclusion>-->
+<!--                  <groupId>io.netty</groupId>-->
+<!--                  <artifactId>netty-transport-native-kqueue</artifactId>-->
+<!--              </exclusion>-->
+<!--              <exclusion>-->
+<!--                  <groupId>io.netty</groupId>-->
+<!--                  <artifactId>netty-transport-native-epoll</artifactId>-->
+<!--              </exclusion>-->
+<!--          </exclusions>-->
+<!--      </dependency>-->
 </dependencies>
 
 <scm>

@@ -77,7 +77,10 @@ public class Helper{
     	
     	platformsList = Collections.unmodifiableMap(aList);
     }
-	
+
+	public static boolean isRuntimeDocker(String url){
+		return url.startsWith("unix://") || url.startsWith("tcp://");
+	}
     
     public static boolean isValidCVEList(String cveList) {
     	if(cveList != null && !StringUtils.isBlank(cveList)) {
