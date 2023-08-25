@@ -218,11 +218,11 @@
 		        	<f:textbox style="width: 50%; min-width: 320px;" />
 		    	</f:entry>
 
-				<f:block> <div class="qualys-section-header">&#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; Runtime Settings  </div>
-					<f:entry title="&#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; Docker URL/Nerdctl binary path" description="Docker server REST API URL/Nerdctl binary path" field="dockerUrl" >
+				<f:block> <div class="qualys-section-header">&#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; Runtime Settings  </div>
+					<f:entry title="&#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; Docker URL/Nerdctl binary path" description="Provide your docker socket path or containerd nerdctl binary file path" field="dockerUrl" help="/plugin/qualys-cs/help/docker_Containerd.html" >
 		        		<f:textbox default="test" />
 		    		</f:entry>
-		    		<f:entry title="&#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; Cert file path" field="dockerCert">
+					<f:entry title="&#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; Cert file path" description="If you are using docker with TLS, cert path should be provided in this field." field="dockerCert">
 		        		<f:textbox />
 		    		</f:entry>
 		    	</f:block>
