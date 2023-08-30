@@ -48,11 +48,8 @@
     <f:section title="Qualys Container Security">
 		    <f:block> <div class="qualys-section-header"> &#160; &#160; &#160; &#160; &#160; &#160; &#160;  API Login  </div> 
 		    	<div> &#160; &#160; &#160; &#160; &#160; &#160; &#160;  Provide details for accessing the Qualys Container Security API.  </div> <br /> </f:block>
-		    	<f:entry title="Your Qualys Portal" field="platform" help="/plugin/qualys-cs/help/platform.html">
-			        <f:select name="platform" style="width: 35%;" id="platform" />
-			    </f:entry>
-				<f:entry title="&#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160;  API Server URL:" description="Example: https://qualysapi.qualys.com" id="apiServer" field="apiServer" style="width: 50%; min-width: 320px;">
-			        <f:textbox style="width: 50%; min-width: 320px;" />
+				<f:entry title="&#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; API Server URL:" description="Example: https://qualysapi.qualys.com"  style="width: 50%; min-width: 320px;" help="/plugin/qualys-cs/help/platform.html">
+			        <f:textbox name="apiServer" id="apiServer" field="apiServer" style="width: 50%; min-width: 320px;" />
 			    </f:entry>
 			    <f:entry field="credentialsId" title="&#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160;  ${%Credentials}">
 					<c:select />
@@ -273,17 +270,7 @@
 		function cvssOptionChanged(){
 			document.getElementsByName("cvssThreshold")[0].value = "0.0";
 		}
-		
-		
-		
-		var apiServerTr = document.getElementsByName("_.apiServer")[0].parentNode.parentNode;
-		  
-		  
-		apiServerTr.style.display = 'none';
-		//apiServerTr.next('tr').style.display = 'none';
-		  
-		  
-		  
+
 		  
 	    document.getElementById("platform").onchange = function(){
 			if(this.value === "PCP"){

@@ -153,11 +153,6 @@
 						}
 					}
 				}
-				
-				if(document.getElementById("platform").value == "PCP"){
-			    	apiServerTr.style.display = 'table-row';
-					//apiServerTr.next().style.display='table-row';
-			    }
 		    }
 	    }
 	    updateApiServer();
@@ -176,12 +171,9 @@
 	    <f:optionalBlock name="useLocalConfig" field="useLocalConfig" title="Use Job Specific Configuration" inline="true">
 		    <f:section title="API Login">
 		    	<f:block> <div> Provide details for accessing the Qualys Container Security API.  </div> <br /> </f:block>
-		    	<f:entry title="Your Qualys Portal" field="platform" help="/plugin/qualys-cs/help/platform.html">
-			        <f:select name="platform" style="width: 35%;" id="platform" />
-			    </f:entry>
-				<f:entry title="API Server URL:" description="Example: https://qualysapi.qualys.com" id="apiServer" field="apiServer">
-			        <f:textbox style="width: 50%; min-width: 320px;" />
-			    </f:entry>
+				<f:entry title="API Server URL:" description="Example: https://qualysapi.qualys.com"  style="width: 50%; min-width: 320px;" help="/plugin/qualys-cs/help/platform.html">
+					<f:textbox name="apiServer" id="apiServer" field="apiServer" style="width: 50%; min-width: 320px;" />
+				</f:entry>
 			    <f:entry field="credentialsId" title=" ${%Credentials}" help="/plugin/qualys-cs/help/credentialsId.html">
 					<c:select id="credentialsId" />
 				</f:entry>
