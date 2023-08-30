@@ -1376,7 +1376,7 @@ public class GetImageVulnsNotifier extends Notifier implements SimpleBuildStep {
         public FormValidation doCheckConnection(@QueryParameter String platform, @QueryParameter String apiServer, @QueryParameter String credentialsId, 
         		@QueryParameter String proxyServer, @QueryParameter String proxyPort, @QueryParameter String proxyCredentialsId,
         		@QueryParameter boolean useProxy, @AncestorInPath Item item) {
-        	Jenkins.getInstance().checkPermission(Item.CONFIGURE);
+        	item.checkPermission(Item.CONFIGURE);
         	String apiUser = "";
     		String apiPass = "";
     		String proxyUsername = "";
@@ -1456,10 +1456,9 @@ public class GetImageVulnsNotifier extends Notifier implements SimpleBuildStep {
         
         @POST
         public ListBoxModel doFillCredentialsIdItems(@AncestorInPath Item item, @QueryParameter String credentialsId) {
-        	Jenkins.getInstance().checkPermission(Item.CONFIGURE);
         	StandardListBoxModel result = new StandardListBoxModel();
             if (item == null) {
-            	if (!Jenkins.getInstance().hasPermission(Item.CONFIGURE)) {
+            	if (!Jenkins.getInstance().hasPermission(Jenkins.ADMINISTER)) {
                 	return result.add(credentialsId);
                 }
             } else {
@@ -1476,10 +1475,9 @@ public class GetImageVulnsNotifier extends Notifier implements SimpleBuildStep {
         
         @POST
         public ListBoxModel doFillProxyCredentialsIdItems(@AncestorInPath Item item, @QueryParameter String proxyCredentialsId) {
-        	Jenkins.getInstance().checkPermission(Item.CONFIGURE);
             StandardListBoxModel result = new StandardListBoxModel();
             if (item == null) {
-            	if (!Jenkins.getInstance().hasPermission(Item.CONFIGURE)) {
+            	if (!Jenkins.getInstance().hasPermission(Jenkins.ADMINISTER)) {
                 	return result.add(proxyCredentialsId);
                 }
             } else {
