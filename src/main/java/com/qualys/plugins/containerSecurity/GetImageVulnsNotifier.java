@@ -615,11 +615,7 @@ public class GetImageVulnsNotifier extends Notifier implements SimpleBuildStep {
     	if(useGlobalConfig) {
     		this.apiServer = QualysGlobalConfig.get().getApiServer();
     		this.platform = QualysGlobalConfig.get().getPlatform();
-    		apiServer = apiServer.trim();
-    		if(!this.platform.equalsIgnoreCase("pcp")) {
-        		Map<String, String> platformObj = Helper.platformsList.get(this.platform);
-        		this.apiServer = platformObj.get("url");
-        	}
+    		this.apiServer = apiServer.trim();
     		//setting credentials from credentials store
     		credentialsId = QualysGlobalConfig.get().getCredentialsId();
     		
@@ -879,10 +875,6 @@ public class GetImageVulnsNotifier extends Notifier implements SimpleBuildStep {
     	}
     	else{
     		try {
-    			if(!this.platform.equalsIgnoreCase("pcp")) {
-            		Map<String, String> platformObj = Helper.platformsList.get(this.platform);
-            		apiServer = platformObj.get("url");
-            	}
         		logger.info("Using qualys API Server URL: " + apiServer);
 				StandardUsernamePasswordCredentials credential = CredentialsMatchers.firstOrNull(
 						CredentialsProvider.lookupCredentials(
@@ -1102,23 +1094,6 @@ public class GetImageVulnsNotifier extends Notifier implements SimpleBuildStep {
         	return FormValidation.ok();
         }
         
-        public ListBoxModel doFillPlatformItems() {
-        	ListBoxModel model = new ListBoxModel();
-        	for(Map<String, String> platform: getPlatforms()) {
-        		Option e = new Option(platform.get("name"), platform.get("code"));
-            	model.add(e);
-        	}
-        	return model;
-        }
-        
-        public List<Map<String, String>> getPlatforms() {
-        	List<Map<String, String>> result = new ArrayList<Map<String, String>>();
-        	for (Map.Entry<String, Map<String, String>> platform : Helper.platformsList.entrySet()) {
-                Map<String, String>obj = platform.getValue();
-                result.add(obj);
-            }
-            return result;
-        }
 
         public FormValidation doCheckApiServer(@QueryParameter String apiServer) {
             try {
@@ -1383,10 +1358,6 @@ public class GetImageVulnsNotifier extends Notifier implements SimpleBuildStep {
     		String proxyPassword = "";
         	try {
         		apiServer = apiServer.trim();
-        		if(!platform.equalsIgnoreCase("pcp")) {
-            		Map<String, String> platformObj = Helper.platformsList.get(platform);
-            		apiServer = platformObj.get("url");
-            	}
         		logger.info("Using qualys API Server URL: " + apiServer);
         		FormValidation apiServerValidation = doCheckApiServer(apiServer);
         		FormValidation proxyServerValidation = doCheckProxyServer(proxyServer);
