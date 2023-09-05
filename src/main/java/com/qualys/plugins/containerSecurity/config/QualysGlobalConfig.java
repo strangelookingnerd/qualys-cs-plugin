@@ -1,10 +1,7 @@
 package com.qualys.plugins.containerSecurity.config;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import hudson.util.ListBoxModel.Option;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
@@ -161,24 +158,8 @@ public class QualysGlobalConfig extends GlobalConfiguration {
                 .withMatching(CredentialsMatchers.withId(proxyCredentialsId));
     }
     
-    public ListBoxModel doFillPlatformItems() {
-    	ListBoxModel model = new ListBoxModel();
-    	for(Map<String, String> platform: getPlatforms()) {
-    		Option e = new Option(platform.get("name"), platform.get("code"));
-        	model.add(e);
-    	}
-    	return model;
-    }
-    
-    public List<Map<String, String>> getPlatforms() {
-    	List<Map<String, String>> result = new ArrayList<Map<String, String>>();
-    	for (Map.Entry<String, Map<String, String>> platform : Helper.platformsList.entrySet()) {
-            Map<String, String>obj = platform.getValue();
-            result.add(obj);
-        }
-        return result;
-    }
-    
+
+
     
     public FormValidation doCheckCveList(@QueryParameter String cveList) {
     	if(! Helper.isValidCVEList(cveList)) {
@@ -188,7 +169,7 @@ public class QualysGlobalConfig extends GlobalConfiguration {
     }
     
     @POST
-    public FormValidation doCheckConnection(@QueryParameter String platform, @QueryParameter String apiServer, @QueryParameter String credentialsId, @QueryParameter String proxyServer, @QueryParameter String proxyPort,
+    public FormValidation doCheckConnection(@QueryParameter String apiServer, @QueryParameter String credentialsId, @QueryParameter String proxyServer, @QueryParameter String proxyPort,
     		@QueryParameter String proxyCredentialsId, @QueryParameter boolean useProxy, @AncestorInPath Item item) {
     	Jenkins.getInstance().checkPermission(Jenkins.ADMINISTER);
     	String apiUser = "";
@@ -223,10 +204,7 @@ public class QualysGlobalConfig extends GlobalConfiguration {
             	
     	try {
     		apiServer = apiServer.trim();
-    		if(!platform.equalsIgnoreCase("pcp")) {
-        		Map<String, String> platformObj = Helper.platformsList.get(platform);
-        		apiServer = platformObj.get("url");
-        	}
+			apiServer = getPortalUrl(apiServer);
     		logger.info("Using qualys API Server URL: " + apiServer);
     		FormValidation apiServerValidation = doCheckApiServer(apiServer);
     		FormValidation proxyServerValidation = doCheckProxyServer(proxyServer);
@@ -553,7 +531,25 @@ public class QualysGlobalConfig extends GlobalConfiguration {
     	}
     	return FormValidation.ok();        	
     } // End of doCheckCvssThreshold FormValidation
-        
+
+	public String getPortalUrl(String apiServerURL)
+	{
+		String SCP_URL_PREFIX="https://qualysguard.";
+		String PCP_URL_PREFIX = "https://qualysgateway.";
+		String [] arr = apiServerURL.split("\\.");
+		String rest_url=String.join(".", Arrays.copyOfRange(arr, 1, arr.length));
+		String portalUrl="";
+
+		// String Compariosn includes qualys. and apps.qualys as Server URL contains either qualys or only apps.qualys.
+		// If it does not suffice the above condition it is PCP Server URL
+		if (rest_url.contains("qualys.") || rest_url.contains("apps.qualys")) {
+			portalUrl = SCP_URL_PREFIX + rest_url;
+		} else {
+			portalUrl = PCP_URL_PREFIX + rest_url;
+		}
+		logger.info("Converting serverUrl: " + apiServerURL + " to portalUrl:" + portalUrl);
+		return portalUrl;
+	}
     public static QualysGlobalConfig get() {
         return GlobalConfiguration.all().get(QualysGlobalConfig.class);
     }
