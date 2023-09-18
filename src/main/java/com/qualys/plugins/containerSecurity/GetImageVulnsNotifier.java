@@ -131,7 +131,7 @@ public class GetImageVulnsNotifier extends Notifier implements SimpleBuildStep {
     		String vulnsTimeout, boolean isFailOnSevereVulns, int severity1Limit, int severity2Limit, int severity3Limit, int severity4Limit, int severity5Limit, boolean isSev1Vulns,
     		boolean isSev2Vulns, boolean isSev3Vulns, boolean isSev4Vulns, boolean isSev5Vulns, String proxyServer, int proxyPort, String proxyUsername,
     		String proxyPassword, boolean useProxy,  String proxyCredentialsId, boolean isFailOnQidFound, String qidList, boolean isFailOnCVEs, String cveList, boolean isFailOnSoftware, String softwareList, boolean isPotentialVulnsToBeChecked, String imageIds, String webhookUrl,
-    		boolean isExcludeConditions, String excludeBy, String excludeList, boolean failByCvss, String cvssVersion, String cvssThreshold, String platform) {
+    		boolean isExcludeConditions, String excludeBy, String excludeList, boolean failByCvss, String cvssVersion, String cvssThreshold) {
 		
 		if(useGlobalConfig) {
 			this.imageIds = imageIds;
@@ -140,10 +140,8 @@ public class GetImageVulnsNotifier extends Notifier implements SimpleBuildStep {
         if(useLocalConfig) {
         	this.useLocalConfig = useLocalConfig;
         	this.imageIds = imageIds;
-        	this.platform = platform;
-	        if(platform.equalsIgnoreCase("pcp")) {
-	        	this.apiServer = apiServer;
-	        }
+			this.apiServer = QualysGlobalConfig.get().getPortalUrl(apiServer);
+			this.platform = this.apiServer;
 			if(apiUser!=null && !apiUser.isEmpty()) { this.apiUser = apiUser; }
         	if(apiPass!=null && !apiPass.isEmpty()) { this.apiPass = Secret.fromString(apiPass); }
         	this.credentialsId = credentialsId;
@@ -614,7 +612,6 @@ public class GetImageVulnsNotifier extends Notifier implements SimpleBuildStep {
     public void setConfigOptions(TaskListener listener, Run<?, ?> run) throws AbortException {
     	if(useGlobalConfig) {
     		this.apiServer = QualysGlobalConfig.get().getApiServer();
-    		this.platform = QualysGlobalConfig.get().getPlatform();
     		this.apiServer = apiServer.trim();
     		//setting credentials from credentials store
     		credentialsId = QualysGlobalConfig.get().getCredentialsId();
@@ -1348,7 +1345,7 @@ public class GetImageVulnsNotifier extends Notifier implements SimpleBuildStep {
         }
         
         @POST
-        public FormValidation doCheckConnection(@QueryParameter String platform, @QueryParameter String apiServer, @QueryParameter String credentialsId, 
+        public FormValidation doCheckConnection(@QueryParameter String apiServer, @QueryParameter String credentialsId,
         		@QueryParameter String proxyServer, @QueryParameter String proxyPort, @QueryParameter String proxyCredentialsId,
         		@QueryParameter boolean useProxy, @AncestorInPath Item item) {
         	item.checkPermission(Item.CONFIGURE);
@@ -1358,6 +1355,7 @@ public class GetImageVulnsNotifier extends Notifier implements SimpleBuildStep {
     		String proxyPassword = "";
         	try {
         		apiServer = apiServer.trim();
+				apiServer =QualysGlobalConfig.get().getPortalUrl(apiServer);
         		logger.info("Using qualys API Server URL: " + apiServer);
         		FormValidation apiServerValidation = doCheckApiServer(apiServer);
         		FormValidation proxyServerValidation = doCheckProxyServer(proxyServer);
