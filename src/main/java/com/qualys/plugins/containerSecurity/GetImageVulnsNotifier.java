@@ -140,7 +140,7 @@ public class GetImageVulnsNotifier extends Notifier implements SimpleBuildStep {
         if(useLocalConfig) {
         	this.useLocalConfig = useLocalConfig;
         	this.imageIds = imageIds;
-			this.apiServer = QualysGlobalConfig.get().getPortalUrl(apiServer);
+			this.apiServer = apiServer;
 			this.platform = this.apiServer;
 			if(apiUser!=null && !apiUser.isEmpty()) { this.apiUser = apiUser; }
         	if(apiPass!=null && !apiPass.isEmpty()) { this.apiPass = Secret.fromString(apiPass); }
