@@ -148,7 +148,12 @@
        <version>2.6.1.1</version>
        <optional>true</optional>
    </dependency>
-   <dependency>
+      <dependency>
+          <groupId>io.jenkins.plugins</groupId>
+          <artifactId>jnr-posix-api</artifactId>
+          <version>3.1.7-1</version>
+      </dependency>
+      <dependency>
 		<groupId>com.qualys</groupId>
         <artifactId>cs-plugin-common</artifactId>
         <version>1.2.5</version>
