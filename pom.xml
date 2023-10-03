@@ -10,7 +10,7 @@
   </parent>
   <groupId>com.qualys.plugins</groupId>
   <artifactId>qualys-cs</artifactId>
-  <version>1.7.0.0-SNAPSHOT</version>
+  <version>1.7.0.0</version>
   <packaging>hpi</packaging>
 
   <properties>
@@ -241,7 +241,7 @@
 	<connection>scm:git:ssh://github.com/jenkinsci/qualys-cs-plugin.git</connection>
 	<developerConnection>scm:git:ssh://git@github.com/jenkinsci/qualys-cs-plugin.git</developerConnection>
 	<url>https://github.com/jenkinsci/qualys-cs-plugin</url>
-    	<tag>HEAD</tag>
+    	<tag>1</tag>
 </scm>
 	
 <organization>
