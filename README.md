@@ -31,10 +31,14 @@ url}/manage/configure > Qualys Container Security > Advanced Settings.
     For dockerd, the expected configuration is docker socket path eg.
     unix://path_of_docker.sock or tcp://[host]:[port], in case of TLS, cert path should be provided in field 'Cert file path'
  * For containerd, the expected configuration is nerdctl binary path. eg. /var/nerdctl _binary
-   As nerdctl binary is required for the plugin to complete its activities, it is advised to make it accessible for plugin by mapping the nerdctl binary path in Jenkins 
-   deployment.yaml's volumeMounts section
+   As nerdctl binary is required for the plugin to complete its activities, it is advised to make it accessible for plugin by mapping the nerdctl binary path as well as the 
+   containerd.sock file path in Jenkins deployment.yaml's volumeMounts section.
+   Please refer the below sample :
+   <img width="393" alt="image" src="https://github.com/jenkinsci/qualys-cs-plugin/assets/143092348/bf609084-9ba3-4420-a4d1-9435fe129b0c">
  * Cert File Path (optional): If you are using remote server enabled https, you can provide a specific folder location which contains the files ca.pem, cert.pem and 
    key.pem. For example, /var/jenkins_home/certs
+
+
 If you are using pipeline, you should go to "Pipeline Syntax", and select `getImageVulnsFromQualys` step.
 If you are using freestyle, you should add `Scan container images with Qualys CS` build step.
 
