@@ -25,7 +25,7 @@ We recommend using this plugin step during "Post-build" phase of your job, right
 
 ### Configuration
 Before the Job configuration, make sure to configure the docker socket/containerd binary path for the plugin to be able to tag the image.
-To configure the following fields, navigate to 'Qualys Container Security' section in the path {Jenkins-Instance-url}/manage/configure' as -> {Jenkins-Instance- 
+To configure the following fields, navigate to 'Qualys Container Security' section in the path as -> {Jenkins-Instance- 
 url}/manage/configure > Qualys Container Security > Advanced Settings.
  * Docker URL/Nerdctl binary path: Configure this field as per your runtime environment.
     For dockerd, the expected configuration is docker socket path eg.
@@ -34,11 +34,13 @@ url}/manage/configure > Qualys Container Security > Advanced Settings.
    As nerdctl binary is required for the plugin to complete its activities, it is advised to make it accessible for plugin by mapping the nerdctl binary path as well as the 
    containerd.sock file path in Jenkins deployment.yaml's volumeMounts section.
    Please refer the below sample :
+   
    <img width="393" alt="image" src="https://github.com/jenkinsci/qualys-cs-plugin/assets/143092348/bf609084-9ba3-4420-a4d1-9435fe129b0c">
+   
  * Cert File Path (optional): If you are using remote server enabled https, you can provide a specific folder location which contains the files ca.pem, cert.pem and 
    key.pem. For example, /var/jenkins_home/certs
 
-
+## For Job Configuration
 If you are using pipeline, you should go to "Pipeline Syntax", and select `getImageVulnsFromQualys` step.
 If you are using freestyle, you should add `Scan container images with Qualys CS` build step.
 
@@ -73,7 +75,8 @@ You can also exclude some conditions - You can configure a comma separated list 
 
 If you are configuring pipeline project, click the `Generate Pipeline Script` button. It will give you a command which you can copy and paste in your project's pipeline script. 
 
-## Release/v1.7.0.1
+## Release Notes for v1.7.0.1
  * v1.7.0.1 contains support for the containerd runtime environment.
      * Please refer to the documentation for the required configuration with respect to containerd environment.
- * Platform input field is not changed from dropdown to input text field.
+ * Platform input field is now changed from dropdown to input text field.
+ * Minor log changes.
