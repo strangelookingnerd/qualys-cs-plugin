@@ -30,9 +30,9 @@ url}/manage/configure > Qualys Container Security > Advanced Settings.
  * Docker URL/Nerdctl binary path: Configure this field as per your runtime environment.
     For dockerd, the expected configuration is docker socket path eg.
     unix://path_of_docker.sock or tcp://[host]:[port], in case of TLS, cert path should be provided in field 'Cert file path'
- * For containerd, the expected configuration is nerdctl binary path. eg. /var/conatinerd_ctl
+ * For containerd, the expected configuration is nerdctl binary path. eg. /var/nerdctl _binary
    As nerdctl binary is required for the plugin to complete its activities, it is advised to make it accessible for plugin by mapping the nerdctl binary path in Jenkins 
-   deployment.yaml
+   deployment.yaml's volumeMounts section
  * Cert File Path (optional): If you are using remote server enabled https, you can provide a specific folder location which contains the files ca.pem, cert.pem and 
    key.pem. For example, /var/jenkins_home/certs
 If you are using pipeline, you should go to "Pipeline Syntax", and select `getImageVulnsFromQualys` step.
@@ -70,6 +70,6 @@ You can also exclude some conditions - You can configure a comma separated list 
 If you are configuring pipeline project, click the `Generate Pipeline Script` button. It will give you a command which you can copy and paste in your project's pipeline script. 
 
 ## Release/v1.7.0.1
- * v1.7.0.1 contains support for the containerd runtime environment
-     * Please refer to the documentation for the required configuration with respect to containerd environment
+ * v1.7.0.1 contains support for the containerd runtime environment.
+     * Please refer to the documentation for the required configuration with respect to containerd environment.
  * Platform input field is not changed from dropdown to input text field.
