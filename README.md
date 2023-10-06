@@ -19,6 +19,16 @@ The sensor uploads all the data for configured image to the Qualys platform. Qua
 * Internet connection for slave to be able to connect to the Qualys Cloud Platform. Install sensor with proxy option if slave is running behind proxy. 
 * The Jenkins master and slave nodes should have an open connection to the Qualys Cloud Platform in order to get data from the Qualys Cloud Platform for vulnerability reporting.
 
+## Scanning CI/CD images
+ * Configure the docker URL / socket path for the plugin to automatically tag CI/CD images with 'qualys_scan_target:<image-id>'.
+ * To configure the following fields, navigate to 'Qualys Container Security' section in the path {Jenkins-Instance-url}/manage/configure.
+ * Docker URL/Nerdctl binary path: Configure this field as per your runtime environment.
+    For dockerd, the expected configuration is docker socket path eg.
+    unix://path_of_docker.sock or tcp://[host]:[port], in case of TLS, cert path should be provided in field 'Cert file path'
+    For containerd, the expected configuration is nerdctl binary path. eg. /var/conatinerd_ctl
+ * Cert File Path (optional): If you are using remote server enabled https, you can provide a specific folder location which contains the files ca.pem, cert.pem and 
+   key.pem. For example, /var/jenkins_home/certs
+
 ### Where to use this plugin step
 
 We recommend using this plugin step during "Post-build" phase of your job, right after you build a container image. 
