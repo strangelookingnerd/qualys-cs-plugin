@@ -75,8 +75,13 @@ You can also exclude some conditions - You can configure a comma separated list 
 
 If you are configuring pipeline project, click the `Generate Pipeline Script` button. It will give you a command which you can copy and paste in your project's pipeline script. 
 
-## Release Notes for v1.7.0.1
+## Release Notes for v1.7x
  * v1.7.0.1 contains support for the containerd runtime environment.
      * Please refer to the documentation for the required configuration with respect to containerd environment.
  * Platform input field is now changed from dropdown to input text field.
+     * For the Customer's upgrading to v1.7x and if you are using pipeline job in your Jenkins then for this change to work 
+       properly, make sure to reconfigure the pipeline snippet for 'Qualys Container Scanning Connector' plugin task in your 
+       pipeline post-upgrade.
+     * This should be one time activity post-upgrade for existing pipelines to run smoothly.
+       Note: This change does not affect the 'Freestyle' jobs in Jenkins.
  * Minor log changes.
