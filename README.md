@@ -82,5 +82,6 @@ If you are configuring pipeline project, click the `Generate Pipeline Script` bu
      * For the Customer's upgrading to v1.7x and If you are using a pipeline job in your Jenkins, you must reconfigure the pipeline snippet for 'Qualys Container Scanning Connector' plugin task in your pipeline. Failure 
        to do will result in the plugin breaking after upgrade.
      * This should be one time activity post-upgrade for existing pipelines to run smoothly.
-       Note: This change does not affect the 'Freestyle' jobs in Jenkins.
+     * Note: This change does not affect the 'Freestyle' jobs in Jenkins.
  * Minor log changes.
+ * For detailed information on upgrading of Qualys Container Scanning Connector to the 1.7.x version, please visit [user guide](https://www.qualys.com/docs/qualys-container-scanning-connector-jenkins-plugin-user-guide.pdf)
