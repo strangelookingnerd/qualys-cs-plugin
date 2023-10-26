@@ -79,9 +79,8 @@ If you are configuring pipeline project, click the `Generate Pipeline Script` bu
  * v1.7.0.1 contains support for the containerd runtime environment.
      * Please refer to the documentation for the required configuration with respect to containerd environment.
  * Platform input field is now changed from dropdown to input text field.
-     * For the Customer's upgrading to v1.7x and if you are using pipeline job in your Jenkins then for this change to work 
-       properly, make sure to reconfigure the pipeline snippet for 'Qualys Container Scanning Connector' plugin task in your 
-       pipeline post-upgrade.
+     * For the Customer's upgrading to v1.7x and If you are using a pipeline job in your Jenkins, you must reconfigure the pipeline snippet for 'Qualys Container Scanning Connector' plugin task in your pipeline. Failure 
+       to do will result in the plugin breaking after upgrade.
      * This should be one time activity post-upgrade for existing pipelines to run smoothly.
        Note: This change does not affect the 'Freestyle' jobs in Jenkins.
  * Minor log changes.
