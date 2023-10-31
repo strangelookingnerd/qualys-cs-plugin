@@ -3,14 +3,7 @@ package com.qualys.plugins.containerSecurity;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -131,7 +124,7 @@ public class GetImageVulnsNotifier extends Notifier implements SimpleBuildStep {
     		String vulnsTimeout, boolean isFailOnSevereVulns, int severity1Limit, int severity2Limit, int severity3Limit, int severity4Limit, int severity5Limit, boolean isSev1Vulns,
     		boolean isSev2Vulns, boolean isSev3Vulns, boolean isSev4Vulns, boolean isSev5Vulns, String proxyServer, int proxyPort, String proxyUsername,
     		String proxyPassword, boolean useProxy,  String proxyCredentialsId, boolean isFailOnQidFound, String qidList, boolean isFailOnCVEs, String cveList, boolean isFailOnSoftware, String softwareList, boolean isPotentialVulnsToBeChecked, String imageIds, String webhookUrl,
-    		boolean isExcludeConditions, String excludeBy, String excludeList, boolean failByCvss, String cvssVersion, String cvssThreshold) {
+    		boolean isExcludeConditions, String excludeBy, String excludeList, boolean failByCvss, String cvssVersion, String cvssThreshold,String platform) {
 		
 		if(useGlobalConfig) {
 			this.imageIds = imageIds;
@@ -141,7 +134,7 @@ public class GetImageVulnsNotifier extends Notifier implements SimpleBuildStep {
         	this.useLocalConfig = useLocalConfig;
         	this.imageIds = imageIds;
 			this.apiServer = apiServer;
-			this.platform = this.apiServer;
+			this.platform = platform;
 			if(apiUser!=null && !apiUser.isEmpty()) { this.apiUser = apiUser; }
         	if(apiPass!=null && !apiPass.isEmpty()) { this.apiPass = Secret.fromString(apiPass); }
         	this.credentialsId = credentialsId;
@@ -779,8 +772,13 @@ public class GetImageVulnsNotifier extends Notifier implements SimpleBuildStep {
     
     public JsonObject configToJson() {
     	JsonObject obj = new JsonObject();
-		if(this.apiServer != null && !StringUtils.isBlank(this.apiServer)) obj.addProperty("apiServer", this.apiServer);
-		if(this.platform != null && !StringUtils.isBlank(this.platform)) obj.addProperty("platform", this.platform);
+		if(!Objects.isNull(this.apiServer) && !StringUtils.isBlank(this.apiServer)) obj.addProperty("apiServer", this.apiServer);
+		if(!Objects.isNull(this.platform) && !StringUtils.isBlank(this.platform))   obj.addProperty("platform", this.platform);
+		if (!Objects.isNull(this.platform) && !this.platform.equalsIgnoreCase("pcp") && Helper.platformsList.containsKey(this.platform)) {
+			Map<String, String> platformObj = Helper.platformsList.get(this.platform);
+			obj.addProperty("apiServer", platformObj.get("url"));
+			this.apiServer = platformObj.get("url");
+		}
 		obj.addProperty("useProxy", this.useProxy);
 		if(this.proxyServer != null && this.useProxy && !StringUtils.isBlank(this.proxyServer)) obj.addProperty("proxyServer", this.proxyServer);
 		if(this.useProxy) obj.addProperty("proxyPort", this.proxyPort);
