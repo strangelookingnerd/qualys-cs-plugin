@@ -124,7 +124,7 @@ public class GetImageVulnsNotifier extends Notifier implements SimpleBuildStep {
     		String vulnsTimeout, boolean isFailOnSevereVulns, int severity1Limit, int severity2Limit, int severity3Limit, int severity4Limit, int severity5Limit, boolean isSev1Vulns,
     		boolean isSev2Vulns, boolean isSev3Vulns, boolean isSev4Vulns, boolean isSev5Vulns, String proxyServer, int proxyPort, String proxyUsername,
     		String proxyPassword, boolean useProxy,  String proxyCredentialsId, boolean isFailOnQidFound, String qidList, boolean isFailOnCVEs, String cveList, boolean isFailOnSoftware, String softwareList, boolean isPotentialVulnsToBeChecked, String imageIds, String webhookUrl,
-    		boolean isExcludeConditions, String excludeBy, String excludeList, boolean failByCvss, String cvssVersion, String cvssThreshold,String platform) {
+    		boolean isExcludeConditions, String excludeBy, String excludeList, boolean failByCvss, String cvssVersion, String cvssThreshold,String platform, String dockerUrl, String dockerCert) {
 		
 		if(useGlobalConfig) {
 			this.imageIds = imageIds;
@@ -188,6 +188,12 @@ public class GetImageVulnsNotifier extends Notifier implements SimpleBuildStep {
         if(!StringUtils.isBlank(webhookUrl)) {
     		this.webhookUrl = webhookUrl;
     	}
+		if(!StringUtils.isBlank(dockerUrl)) {
+			this.dockerUrl = dockerUrl;
+		}
+		if(!StringUtils.isBlank(dockerCert)){
+			this.dockerCert = dockerCert;
+		}
     }
 
     public GetImageVulnsNotifier() { }
@@ -512,6 +518,24 @@ public class GetImageVulnsNotifier extends Notifier implements SimpleBuildStep {
     public String getImageIds() {
     	return imageIds;
     }
+
+	@DataBoundSetter
+	public void setDockerUrl(String dockerUrl) {
+		this.dockerUrl = dockerUrl;
+	}
+
+	public String getDockerUrl() {
+		return dockerUrl;
+	}
+
+	@DataBoundSetter
+	public void setDockerCert(String dockerCert) {
+		this.dockerCert = dockerCert;
+	}
+
+	public String getDockerCert() {
+		return dockerCert;
+	}
     
     @Override
     public BuildStepMonitor getRequiredMonitorService() {
@@ -672,17 +696,33 @@ public class GetImageVulnsNotifier extends Notifier implements SimpleBuildStep {
 				listener.getLogger().println("No webhook configured.");
 			}
 		}
-    	
-    	String dockerUrlConf = QualysGlobalConfig.get().getDockerUrl();
-    	if(StringUtils.isEmpty(dockerUrlConf)) {
-    		this.dockerUrl = "unix:///var/run/docker.sock";
-    	}else {
-    		this.dockerUrl = dockerUrlConf;
-    	}
-    	String dockerCertConf = QualysGlobalConfig.get().getDockerCert();
-    	if(!StringUtils.isEmpty(dockerCertConf)) {
-    		this.dockerCert = dockerCertConf;
-    	}
+
+		if(this.dockerUrl != null && !StringUtils.isBlank(this.dockerUrl)) {
+			logger.info("Using Job Specific Docker Url/Nerdctl binary path settings : " + this.dockerUrl);
+			listener.getLogger().println("Using Job Specific Docker Url/Nerdctl binary path settings : " + this.dockerUrl);
+			if(this.dockerCert != null && !StringUtils.isBlank(this.dockerCert)) {
+				logger.info("Using Job Specific Docker cert settings : " + this.dockerCert);
+				listener.getLogger().println("Using Job Specific Docker cert settings : " + this.dockerCert);
+			}
+		} else {
+			String dockerUrlConf = QualysGlobalConfig.get().getDockerUrl();
+			if (StringUtils.isEmpty(dockerUrlConf)) {
+				this.dockerUrl = "unix:///var/run/docker.sock";
+			} else {
+				this.dockerUrl = dockerUrlConf;
+				logger.info("Using Global Docker Url/Nerdctl binary path settings : " + this.dockerUrl);
+				listener.getLogger().println("Using Global Docker Url/Nerdctl binary path settings : " + this.dockerUrl);
+			}
+			String dockerCertConf = QualysGlobalConfig.get().getDockerCert();
+			if(!StringUtils.isEmpty(dockerCertConf)) {
+				this.dockerCert = dockerCertConf;
+				if(this.dockerCert != null && !StringUtils.isBlank(this.dockerCert)) {
+					logger.info("Using Global Docker Cert settings : " + this.dockerCert);
+					listener.getLogger().println("Using Global Docker Cert settings : " + this.dockerCert);
+				}
+
+			}
+		}
     	
     	
     }
@@ -690,6 +730,8 @@ public class GetImageVulnsNotifier extends Notifier implements SimpleBuildStep {
     public JsonObject getCriteriaAsJsonObject() {
     	JsonObject obj = new JsonObject();
     	obj.addProperty("webhookUrl", this.webhookUrl);
+		obj.addProperty("dockerUrl", this.dockerUrl);
+		obj.addProperty("dockerCert", this.dockerCert);
     	
     	JsonObject dataCollectionObj = new JsonObject();
     	dataCollectionObj.addProperty("frequency", this.pollingInterval);

@@ -330,6 +330,15 @@
 		    	<f:textbox field="imageIds" />
 		    </f:entry>
 		</f:section>
+
+		<f:section title="Runtime Settings">
+            <f:entry title="Docker URL/Nerdctl binary path" description="Provide your docker socket path or containerd nerdctl binary file path" field="dockerUrl" help="/plugin/qualys-cs/help/docker_Containerd.html">
+                <f:textbox style="width: 50%; min-width: 320px;" />
+            </f:entry>
+            <f:entry title="Cert file path" description="If you are using docker with TLS, cert path should be provided in this field." field="dockerCert">
+                <f:textbox style="width: 50%; min-width: 320px;" />
+            </f:entry>
+        </f:section>
 		
 		<f:section title="Advanced Settings">
 			<f:advanced>
