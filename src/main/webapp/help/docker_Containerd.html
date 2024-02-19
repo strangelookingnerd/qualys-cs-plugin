@@ -1,4 +1,7 @@
 Configure this field as per your runtime environment.
 <br>
-If you are using dockerd then, expected configuration is docker socket path eg. unix://path_of_docker.sock or tcp://[host]:[port], in case of TLS, cert path should be provided in field 'Cert file path'
+If Docker URL/Nerdctl binary path is not configured or set empty for Job Specific Configuration, plugin will use Docker URL/Nerdctl binary path from Global Configuration if it is configured there.
+<br>
+If you are using dockerd then, expected configuration is docker socket path eg. unix://path_of_docker.sock or tcp://[host]:[port], in case of TLS, cert path should be provided in field 'Cert file path'.
+<br>
 If you are using containerd then, expected configuration is nerdctl binary path.
