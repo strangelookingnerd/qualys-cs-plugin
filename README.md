@@ -75,7 +75,7 @@ You can also exclude some conditions - You can configure a comma separated list 
 
 If you are configuring pipeline project, click the `Generate Pipeline Script` button. It will give you a command which you can copy and paste in your project's pipeline script. 
 
-## Release Notes for v1.7.x -
+## Release Notes for v1.7.x
  * v1.7.0.1 contains support for the containerd runtime environment.
      * Please refer to the documentation for the required configuration with respect to containerd environment.
  * Platform input field is now changed from dropdown to input text field.
