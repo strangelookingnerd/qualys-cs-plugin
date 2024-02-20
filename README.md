@@ -76,12 +76,9 @@ You can also exclude some conditions - You can configure a comma separated list 
 If you are configuring pipeline project, click the `Generate Pipeline Script` button. It will give you a command which you can copy and paste in your project's pipeline script. 
 
 ## Release Notes for v1.7.x
- * v1.7.0.1 contains support for the containerd runtime environment.
-     * Please refer to the documentation for the required configuration with respect to containerd environment.
- * Platform input field is now changed from dropdown to input text field.
-     * For the Customer's upgrading to v1.7x and If you are using a pipeline job in your Jenkins, you must reconfigure the pipeline snippet for 'Qualys Container Scanning Connector' plugin task in your pipeline. Failure 
-       to do will result in the plugin breaking after upgrade.
-     * This should be one time activity post-upgrade for existing pipelines to run smoothly.
-     * Note: This change does not affect the 'Freestyle' jobs in Jenkins.
+ * Users can now provide the Docker URL/Nerdctl path from the Job level configuration also.
  * Minor log changes.
  * For detailed information on upgrading of Qualys Container Scanning Connector to the 1.7.x version, please visit [user guide](https://www.qualys.com/docs/qualys-container-scanning-connector-jenkins-plugin-user-guide.pdf)
+
+## Known Issues in v1.7.0.2
+ * Multiple checkboxes for Job Specific Configuration and Global level configuration could get selected at a time for jenkins latest version 2.426.X. To avoid this discrepancy please hard refresh and re select one of the checkbox.
