@@ -1,7 +1,7 @@
 <?jelly escape-by-default='true'?>
 <j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:l="/lib/layout">
- 
-<l:layout>   
+	<st:setHeader name="Content-Security-Policy" value="script-src 'self' 'unsafe-inline' 'unsafe-eval' ; frame-src 'self' ; object-src 'self';" />
+	<l:layout>
 
 <l:side-panel class="padding0">
 	<div class="left-panel-container">
