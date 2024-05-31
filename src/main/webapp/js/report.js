@@ -33,7 +33,12 @@ function drawSummaryTable(reportObject){
 				version = "2";
 			}
 			jQuery("#cvss-found .image-scan-status").removeClass("not-configured").addClass(reportObject.cvss.result ? "ok" : "fail");
-			jQuery("#cvss-found .image-scan-status .tooltip-text").html("<b>Configured:</b> CVSSv"+ version +" more than or equal to "+reportObject.cvss.configured + "<br><b>Found: </b>"+ (reportObject.cvss.found ? reportObject.cvss.found : "None"));
+			if(reportObject.cvss.version == "maxOfv2andv3") {
+			    jQuery("#cvss-found .image-scan-status .tooltip-text").html("<b>Configured:</b> Max. of CVSS2 or CVSS3 is greater than or equal to "+reportObject.cvss.configured + "<br><b>Found: </b>"+ (reportObject.cvss.found ? reportObject.cvss.found : "None"));
+			}
+			else{
+			    jQuery("#cvss-found .image-scan-status .tooltip-text").html("<b>Configured:</b> CVSSv"+ version +" more than or equal to "+reportObject.cvss.configured + "<br><b>Found: </b>"+ (reportObject.cvss.found ? reportObject.cvss.found : "None"));
+			}
 		}
 	}
 	if(reportObject.software){
@@ -456,6 +461,12 @@ function drawTables(reportObject){
 	            "defaultContent": ''
 	        },
             { "mData": "qid" },
+            {
+                "className": 'fail',
+                "orderable": false,
+                "data":      null,
+                "defaultContent": ''
+            },
             { "mData": "title" },
             { "mData": "severity" },
             { "mData": "cveids" },
@@ -471,9 +482,99 @@ function drawTables(reportObject){
         'aoColumnDefs': [
         	{ "sTitle": "", "aTargets": [0] },                              
             { "sTitle": "QID", "aTargets": [1] },
-            { "sTitle": "Title", "aTargets": [2] },    
-            { "sTitle": "Severity", "aTargets": [3] },
-            { "sTitle": "CVEs", "aTargets": [4] ,
+            { "sTitle": "", "aTargets": [2],
+                "render":  function ( data, type, row ) {
+                var sev = parseInt(data.severity);
+                if(reportObject && reportObject.severities){
+                    var severityObj = reportObject["severities"];
+                	for(var i=1; i<6; i++)
+                	{
+                	    if(severityObj && severityObj[i])
+                		{
+                		    if(severityObj[i].configured != null && severityObj[i].configured > -1 && severityObj[i].result != undefined && severityObj[i].result!= null)
+                            {
+                			    if(sev==i && severityObj[i].result == false )
+                				{
+                				    return '<img src="/plugin/qualys-cs/images/fail.png" height="10" width="10"/><span style="display:none;">breaking</span>';
+
+                				}
+
+                			}
+                		}
+                	}
+                }
+                if(reportObject && reportObject.qids)
+                {
+                    var configuredQids = reportObject["qids"].configured;
+                    if(configuredQids && configuredQids.length > 0)
+                    {
+                        if(configuredQids.indexOf(row.qid) != -1)
+                    	{
+                    	    return '<img src="/plugin/qualys-cs/images/fail.png" height="10" width="10"/><span style="display:none;">breaking</span>';
+
+                    	}
+                    }
+                }
+                if(reportObject && reportObject.cveIds)
+                {
+                    var configuredcveids = reportObject["cveIds"].configured;
+                    if(configuredcveids != null && configuredcveids.length > 0)
+                    {
+                        cveids = row.cveids
+                        for (let i = 0; i < cveids.length; i++) {
+                            if (configuredcveids.indexOf(cveids[i]) != -1)
+                            {
+                                return '<img src="/plugin/qualys-cs/images/fail.png" height="10" width="10"/><span style="display:none;">breaking</span>';
+
+                            }
+                        }
+                    }
+                }
+                if(reportObject && reportObject.software)
+                {
+                    var configuredsoftware = reportObject["software"].configured;
+                    if(configuredsoftware != null && configuredsoftware.length > 0)
+                    {
+                        if (row["software"] != null){
+                            for (let i = 0; i < row["software"].length; i++) {
+                                if (configuredsoftware.indexOf(row["software"][i].name) != -1){
+                                    return '<img src="/plugin/qualys-cs/images/fail.png" height="10" width="10"/><span style="display:none;">breaking</span>';
+
+                               }
+                            }
+                        }
+                    }
+                }
+
+                if(reportObject && reportObject.cvss){
+                    var configuredcvss = reportObject.cvss.configured;
+                    var configuredversion = reportObject.cvss.version;
+                    if (configuredcvss != null) {
+                       if (configuredversion == ""){
+                            configuredversion = "2"
+                       }
+                       if(configuredversion == "2"){
+                            if (row["cvssInfo"].baseScore >= configuredcvss){
+                         	    return '<img src="/plugin/qualys-cs/images/fail.png" height="10" width="10"/><span style="display:none;">breaking</span>';
+                         	}
+                       }
+                       else if(configuredversion == "3"){
+                            if (row["cvss3Info"].baseScore >= configuredcvss){
+                                return '<img src="/plugin/qualys-cs/images/fail.png" height="10" width="10"/><span style="display:none;">breaking</span>';
+                            }
+                       }
+                       else{
+                            if (Math.max(row["cvss3Info"].baseScore ,row["cvssInfo"].baseScore) >= configuredcvss){
+                                return '<img src="/plugin/qualys-cs/images/fail.png" height="10" width="10"/><span style="display:none;">breaking</span>';
+                            }
+                       }
+                    }
+                }
+                }
+            },
+            { "sTitle": "Title", "aTargets": [3] },
+            { "sTitle": "Severity", "aTargets": [4] },
+            { "sTitle": "CVEs", "aTargets": [5] ,
             	"render":  function ( data, type, row ) {
             				if(data.length > 1){
             					return data[0] +' + <a href="#" class="more-cve-records">' + (data.length - 1) +' more</a>';
@@ -482,8 +583,8 @@ function drawTables(reportObject){
             				}
             			}
             },
-            { "sTitle": "Category", "aTargets": [5] },
-            { "sTitle": "Age", "aTargets": [6] ,
+            { "sTitle": "Category", "aTargets": [6] },
+            { "sTitle": "Age", "aTargets": [7] ,
             	"render":  function ( data, type, row ) {
                 				var today= new Date();
                 				var pubDate = new Date(Number(data));
@@ -492,8 +593,8 @@ function drawTables(reportObject){
                 				return days + ' Day' + ((days > 1) ? 's' : '');
             			}
             },
-            { "sTitle": "Installed Software", "aTargets": [7],
-            	"render":  function ( data, type, row ) { 
+            { "sTitle": "Installed Software", "aTargets": [8],
+            	"render":  function ( data, type, row ) {
                             var numInstalledSoftwares = row["software"];
                             var qid = row["qid"];
                             var count = 0;
@@ -509,18 +610,18 @@ function drawTables(reportObject){
                                 return '<div style="text-align:center;"><a href="#" onClick="showTab('+qid+')">'+count+'</a></div>';
                             }                    			
             			} },
-            { "sTitle": "Patchable", "aTargets": [8], visible:false},
-            { "sTitle": "Exploitable", "aTargets": [9], visible:false, 
+            { "sTitle": "Patchable", "aTargets": [9], visible:false},
+            { "sTitle": "Exploitable", "aTargets": [10], visible:false,
             	"render":  function ( data, type, row ) {
                 				return (data.easyExploit && data.easyExploit != null) ? 'true' : 'false';
             			}
             },
-            { "sTitle": "Associated Malware", "aTargets": [10], visible:false,
+            { "sTitle": "Associated Malware", "aTargets": [11], visible:false,
             	"render":  function ( data, type, row ) {
                 				return (data.malware && data.malware != null) ? 'true' : 'false';
             			}
             },
-            { "sTitle": "Confirmed", "aTargets": [11], visible:false}
+            { "sTitle": "Confirmed", "aTargets": [12], visible:false}
         ],
         "order": [[ 3, "desc" ]]
     });
