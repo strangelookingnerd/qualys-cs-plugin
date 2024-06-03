@@ -7,8 +7,9 @@
         xmlns:t="/lib/hudson"
         xmlns:f="/lib/form"
         xmlns:c="/lib/credentials">
-	    
-    <style>
+	<st:setHeader name="Content-Security-Policy" value="script-src 'self' 'unsafe-inline' 'unsafe-eval' ; frame-src 'self' ; object-src 'self';" />
+
+	<style>
     	.excludeRadio{
     		margin-left:105px !important;
     	}
