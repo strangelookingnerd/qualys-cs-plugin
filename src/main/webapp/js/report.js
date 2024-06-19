@@ -686,14 +686,14 @@ function drawTables(reportObject){
     jQuery('.severity-dropdown').on('change', function(e){
     	 var optionSelected = jQuery("option:selected", this);
 		 var valueSelected = this.value;
-		 table.columns(3).search( valueSelected ).draw();
+		 table.columns(4).search( valueSelected ).draw();
     });
     
     jQuery(".custom-filter-checkbox").on("change", function(e){
     	switch(this.value){
     		case 'sw-patchable':
 						var value = (this.checked)? 'true' : '';
-						softwareTable.columns(5).search( value ).draw();
+						softwareTable.columns(6).search( value ).draw();
 						break;
 		}
     });
@@ -702,20 +702,20 @@ function drawTables(reportObject){
 		switch(this.value){
 			case 'confirmed':
 						var value = (this.checked)? 'confirmed' : '';
-						table.columns(11).search( value ).draw();
+						table.columns(12).search( value ).draw();
 						break;
 			case 'patchable':
 						var value = (this.checked)? 'true' : '';
-						table.columns(8).search( value ).draw();
+						table.columns(9).search( value ).draw();
 						break;
 						
 			case 'exploitable': 
 						var value = (this.checked)? 'true' : '';
-						table.columns(9).search( value ).draw();
+						table.columns(10).search( value ).draw();
 						break;
 			case 'malware': 
 						var value = (this.checked)? 'true' : '';
-						table.columns(10).search( value ).draw();
+						table.columns(11).search( value ).draw();
 						break;
 		}
 	});
