@@ -693,7 +693,7 @@ function drawTables(reportObject){
     	switch(this.value){
     		case 'sw-patchable':
 						var value = (this.checked)? 'true' : '';
-						softwareTable.columns(6).search( value ).draw();
+						softwareTable.columns(5).search( value ).draw();
 						break;
 		}
     });
