@@ -7,8 +7,9 @@
         xmlns:t="/lib/hudson"
         xmlns:f="/lib/form"
         xmlns:c="/lib/credentials">
-	    
-    <style>
+	<st:setHeader name="Content-Security-Policy" value="script-src 'self' 'unsafe-inline' 'unsafe-eval' ; frame-src 'self' ; object-src 'self';" />
+
+	<style>
     	.excludeRadio{
     		margin-left:105px !important;
     	}
@@ -65,6 +66,7 @@
 		document.load = docReady;
 		
 		function docReady() {
+			onChangeCVSS();
 		
 			var x = document.getElementsByName("isPotentialVulnsToBeChecked")[0];
 			if(x!==undefined)
@@ -95,13 +97,16 @@
 				if("${instance.excludeBy}" === "qid") document.getElementById("optionQid").selected= true;
 			}
 			
+
+		};
+		function onChangeCVSS(){
 			if (document.getElementById("cvssVersion") != null) {
 				document.getElementById("cvssVersion").addEventListener("change", cvssOptionChanged, true);
 				if("${instance.cvssVersion}" === "2") document.getElementById("optionCvssV2").selected= true;
 				if("${instance.cvssVersion}" === "3") document.getElementById("optionCvssV3").selected= true;
+				if("${instance.cvssVersion}" === "maxOfv2andv3") document.getElementById("optionCvssV2orV3").selected= true;
 			}
-		};
-		
+		}
 		function cvssOptionChanged(){
 			document.getElementsByName("cvssThreshold")[0].value = "0.0";
 		}
@@ -287,9 +292,10 @@
 				      	<f:block>
 					      	<div class="severityBlock" id="SeveritySection">					      
 						      &#160; &#160; &#160; &#160; &#160; &#160; &#160; <f:checkbox field="failByCvss" name="failByCvss" title="Fail with: " />
-							        <select id="cvssVersion" name="cvssVersion" field="cvssVersion">
+							        <select id="cvssVersion" name="cvssVersion" field="cvssVersion" onChange="onChangeCVSScvssOptionChanged()">
 								        <option value="2" id="optionCvssV2">CVSSv2</option>
 								        <option value="3" id="optionCvssV3">CVSSv3</option>
+								        <option value="maxOfv2andv3" id="optionCvssV2orV3">Max of CVSSv2 and CVSSv3</option>
 								    </select>
 								Base score 
 								<f:textbox field="cvssThreshold" name="cvssThreshold" id="cvssTextBox" default="0.0" />
